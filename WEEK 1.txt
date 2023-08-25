@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quiz App</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+<h3>Questions:</h3>
+<div id="quiz"></div>
+<div id="result" class="result"></div>
+<button id="submit" class="button">Submit</button>
+<button id="retry" class="button hide">Retry</button>
+<button id="showAnswer" class="button hide">Show Answer</button>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+.body {
+font-family: 'poppins', sans-serif;
+background: #644d24;
+display: flex;
+justify-content: center;
+}
+.container {
+width: 450px;
+padding: 20px;
+margin-top: 80px;
+background-color: #dfa7a7;
+box-shadow: 0 2px 4px rgba(26, 25, 25, 0.1);
+border-radius: 20px;
+}
+h1 {
+text-align: center;
+}
+.question {
+font-weight: bold;
+margin-bottom: 10px;
+}
+.options {
+margin-bottom: 20px;
+}
+.option {
+display: block;
+margin-bottom: 10px;
+}
+.button {
+display: inline-block;
+padding: 10px 20px;
+background-color: #d5e6f5;
+color: #080000;
+border: none;
+cursor: pointer;
+font-size: 16px;
+border-radius: 4px;
+transition: background-color 0.3s;
+margin-right: 10px;
+}
+button:hover {
+    background-color: #92c6f3;
+}
+.result {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+}
+.hide{
+        display: none;
+}
+
+const quizData = [
+    {
+        question: 'Inside which HTML element do we put the JavaScript?',
+        options: ['<script>','<javascript>','<JS>','none'],
+        answer: '<script>',
+        },
+        {
+        question: 'Where is the correct place to insert a JavaScript?',
+        options: ['The <head> section','The <body>section','None','Both'],
+        answer: 'The <body>section',
+        },
+        {
+        question: 'Which data types has wrapper representation?',
+        options: ['Null', 'Symbol', 'Undefined', 'Number'],
+        answer: 'Number',
+        },
+        {
+        question: 'The external JavaScript file must contain the <script> tag.?',
+        options: ['True','False'],
+        answer: 'False',
+        },
+        {
+        question: 'Which of the following is not a reserved word in JavaScript?',
+        options: ['interface',' throws','program ','short'],
+        answer: 'program',
+        },
+        {
+        question: 'Which keyword in javascript can be re-declared and updated?',
+        options: ['let', 'const', 'var', 'None'],
+        answer: 'var',
+        },
+        {
+        question: 'Which tag is used to specify javascript?',
+        options: ['<head>','<body>','<script>','<html>'],
+        answer: '<script>',
+        },
+        {
+        question: 'How can a datatype be declared to be a constant type?.',
+        options: ['const','let','var','constant'],
+        answer: 'const',
+        },
+        {
+        question: 'What does the line "new Date().get Day() " prints ?',
+        options: ['Current date ','Current day','Current date and day','Undefined'],
+        answer: 'Current day',
+        },
+        {
+        question: 'When an operator’s value is NULL, the typeof returned by the unary operator is?',
+        options: ['Undefined', 'Boolean', 'defined', 'Object'],
+        answer: 'Object',
+        },
+    ];
+    const quizContainer = document.getElementById('quiz');
+    const resultContainer = document.getElementById('result');
+    const submitButton = document.getElementById('submit');
+    const retryButton = document.getElementById('retry');
+    const showAnswerButton = document.getElementById('showAnswer');
+    let currentQuestion = 0;
+    let score = 0;
+    let incorrectAnswers = [];
+    function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+    }
+    }
+    function displayQuestion() {
+    
+    const questionData = quizData[currentQuestion];
+    const questionElement = document.createElement('div');
+    questionElement.className = 'question';
+    questionElement.innerHTML = questionData.question;
+    const optionsElement = document.createElement('div');
+    optionsElement.className = 'options';
+    const shuffledOptions = [...questionData.options];
+    shuffleArray(shuffledOptions);
+    for (let i = 0; i < shuffledOptions.length; i++) {
+    const option = document.createElement('label');
+    option.className = 'option';
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = 'quiz';
+    radio.value = shuffledOptions[i];
+    const optionText = document.createTextNode(shuffledOptions[i]);
+    option.appendChild(radio);
+    option.appendChild(optionText);
+    optionsElement.appendChild(option);
+    }
+    quizContainer.innerHTML = '';
+    quizContainer.appendChild(questionElement);
+    quizContainer.appendChild(optionsElement);
+    }
+    function checkAnswer() {
+    const selectedOption = document.querySelector('input[name="quiz"]:checked');
+    if (selectedOption) {
+    const answer = selectedOption.value;
+    if (answer === quizData[currentQuestion].answer) {
+    score++;
+    } else {
+    incorrectAnswers.push({
+    question: quizData[currentQuestion].question,
+    incorrectAnswer: answer,
+    correctAnswer: quizData[currentQuestion].answer,
+    });
+    
+    }
+    currentQuestion++;
+    selectedOption.checked = false;
+    if (currentQuestion < quizData.length) {
+    displayQuestion();
+    } else {
+    displayResult();
+    }
+    }
+    }
+    function displayResult() {
+    quizContainer.style.display = 'none';
+    submitButton.style.display = 'none';
+    retryButton.style.display = 'inline-block';
+    showAnswerButton.style.display = 'inline-block';
+    resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}!`;
+    if(score > 8){
+    resultContainer.innerHTML = `You scored ${score} out of
+    ${quizData.length}. Excellent!`;
+    }
+    else if(score > 5 && score < 8){
+    resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}.
+    Good job!`;
+    }
+    else{
+    resultContainer.innerHTML = `You scored ${score} out of ${quizData.length}.
+    Keep practising.`;
+    }
+    }
+    function retryQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    incorrectAnswers = [];
+    quizContainer.style.display = 'block';
+    submitButton.style.display = 'inline-block';
+    retryButton.style.display = 'none';
+    showAnswerButton.style.display = 'none';
+    resultContainer.innerHTML = '';
+    displayQuestion();
+    }
+    function showAnswer() {
+    quizContainer.style.display = 'none';
+    
+    submitButton.style.display = 'none';
+    retryButton.style.display = 'inline-block';
+    showAnswerButton.style.display = 'none';
+    let incorrectAnswersHtml = '';
+    for (let i = 0; i < incorrectAnswers.length; i++) {
+    incorrectAnswersHtml += `
+    <p>
+    <strong>Question:</strong> ${incorrectAnswers[i].question}<br>
+    <strong>Your Answer:</strong>
+    ${incorrectAnswers[i].incorrectAnswer}<br>
+    
+    <strong>Correct Answer:</strong> ${incorrectAnswers[i].correctAnswer}
+    </p>
+    `;
+    }
+    resultContainer.innerHTML = `
+    <p>You scored ${score} out of ${quizData.length}!</p>
+    <p>Incorrect Answers:</p>
+    ${incorrectAnswersHtml}
+    `;
+    }
+    submitButton.addEventListener('click', checkAnswer);
+    retryButton.addEventListener('click', retryQuiz);
+    showAnswerButton.addEventListener('click', showAnswer);
+    displayQuestion();
